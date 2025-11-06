@@ -17,5 +17,14 @@ impl List {
         List { head: Link::Empty }
     }
 
-    pub fn push(&self) {}
+    pub fn push(&mut self, new_number: i32) {
+        let new_node = Node {
+            elem: new_number,
+            next: std::mem::replace(&mut self.head, Link::Empty),
+        };
+        let new_link = Link::More(Box::new(new_node));
+        self.head = new_link;
+    }
+
+    pub fn pop(&mut self) -> Option<i32> {}
 }
