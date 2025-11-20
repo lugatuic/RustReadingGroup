@@ -1,48 +1,42 @@
-pub struct List {
-    head: Link,
+pub struct List<T> {
+    head: Link<T>,
 }
 
-enum Link {
-    Empty,
-    More(Box<Node>),
+type Link<T> = Option<Box<Node<T>>>;
+
+struct Node<T> {
+    elem: T,
+    next: Link<T>,
 }
 
-struct Node {
-    elem: i32,
-    next: Link,
-}
-
-impl List {
+impl<T> List<T> {
     pub fn new() -> Self {
-        List { head: Link::Empty }
+        List { head: None }
     }
 
-    pub fn push(&mut self, new_number: i32) {
+    pub fn push(&mut self, new_number: T) {
         let new_node = Node {
             elem: new_number,
-            next: std::mem::replace(&mut self.head, Link::Empty),
+            next: self.head.take(),
         };
-        let new_link = Link::More(Box::new(new_node));
+        let new_link = Some(Box::new(new_node));
         self.head = new_link;
     }
 
-    pub fn pop(&mut self) -> Option<i32> {
-        match std::mem::replace(&mut self.head, Link::Empty) {
-            Link::Empty => None,
-            Link::More(first) => {
-                self.head = first.next;
-                Some(first.elem)
-            }
-        }
+    pub fn pop(&mut self) -> Option<T> {
+        self.head.take().map(|first| {
+            self.head = first.next;
+            first.elem
+        })
     }
 }
 
-impl Drop for List {
+impl<T> Drop for List<T> {
     fn drop(&mut self) {
-        let mut cur_link = std::mem::replace(&mut self.head, Link::Empty);
+        let mut cur_link = self.head.take();
         // We'll look at this error next time!
-        while let Link::More(mut boxed_node) = cur_link {
-            cur_link = std::mem::replace(&mut boxed_node.next, Link::Empty);
+        while let Some(mut boxed_node) = cur_link {
+            cur_link = boxed_node.next.take();
         }
     }
 }
