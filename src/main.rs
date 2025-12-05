@@ -1,5 +1,6 @@
 pub mod first;
 pub mod second;
+mod undefined_behavior;
 
 fn main() {
     // let x = Box::new(1);
