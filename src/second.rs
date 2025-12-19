@@ -49,6 +49,33 @@ impl<T> Drop for List<T> {
     }
 }
 
+pub struct IntoIter<T>(List<T>);
+
+impl<T> List<T> {
+    pub fn into_iter(self) -> IntoIter<T> {
+        IntoIter(self)
+    }
+}
+
+impl<T> Iterator for IntoIter<T> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        // access fields of a tuple struct numerically
+        self.0.pop()
+    }
+}
+
+pub struct Iter<'a, T> {
+    next: Option<&'a Node<T>>,
+}
+
+impl<T> List<T> {
+    pub fn iter(&self) -> Iter<T> {
+        Iter {
+            next: self.head.map(|node| &node),
+        }
+    }
+}
 #[cfg(test)]
 mod test {
     use super::List;
@@ -106,7 +133,50 @@ mod test {
 
         assert_eq!(list.peek(), Some(&42));
         assert_eq!(list.pop(), Some(42));
+    }
+    #[test]
+    fn into_iter() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
 
-        for x in list {}
+        let mut iter = list.into_iter();
+        assert_eq!(iter.next(), Some(3));
+        assert_eq!(iter.next(), Some(2));
+        assert_eq!(iter.next(), Some(1));
+        assert_eq!(iter.next(), None);
+    }
+
+    // Macros in C:
+    // ```c
+    // #define A_MACRO 5
+    // #define min(a, b) (((a) < (b)) ? (a) : (b))
+    // #define foo(x) { int a = 5;  }
+    // Source - https://stackoverflow.com/a
+    // Posted by mouviciel, modified by community. See post 'Timeline' for change history
+    // Retrieved 2025-12-19, License - CC BY-SA 4.0
+
+    // #define INTMAX(A, B) ({ int _a = (A), _b = (B) ; _a > _b ? _a : _b ; })
+
+    //
+    // int a = 5;
+    // printf("%d\n", min(a,6));
+    // printf("%d\n", ((foo(5) < (6)) ? foo(5) : (6)));
+    // ```
+    // Preprocessor (shared between C and a buncha other langs) -> Compiler Itself -> ...
+    //
+    // Rust's macro system is less cleanly separated (the compiler handles macros itself), but avoids shenanigans because it is smarter than simple text replacement. It always knows the whole language.
+
+    #[test]
+    fn into_iter_for_loop() {
+        let mut list = List::new();
+        list.push(3);
+        list.push(3);
+        list.push(3);
+
+        for x in list.into_iter() {
+            assert_eq!(x, 3);
+        }
     }
 }
