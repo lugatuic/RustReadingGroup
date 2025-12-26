@@ -211,11 +211,12 @@ mod test {
         assert_eq!(list.peek(), Some(&3));
 
         let mut l_iter;
-        {
-            let mut l = List::new();
-            l.push(5);
-            l_iter = l.iter();
-        }
+        // Uncomment for a lifetime error we discussed in meeting 9.
+        // {
+        //     let mut l = List::new();
+        //     l.push(5);
+        //     l_iter = l.iter();
+        // }
         assert_eq!(l_iter.next(), Some(&5));
     }
 }
