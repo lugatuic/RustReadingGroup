@@ -65,17 +65,33 @@ impl<T> Iterator for IntoIter<T> {
     }
 }
 
+// A lifetime is just a named section of our
+// code for which some object exists.
+// We need to say: "This iterator cannot be used
+//  after the list it references is freed."
 pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
 }
 
 impl<T> List<T> {
-    pub fn iter(&self) -> Iter<T> {
+    pub fn iter(&self) -> Iter<'_, T> {
         Iter {
-            next: self.head.map(|node| &node),
+            next: self.head.as_deref(),
         }
     }
 }
+
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.map(|node| {
+            self.next = node.next.as_deref();
+            &node.elem
+        })
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::List;
@@ -178,5 +194,28 @@ mod test {
         for x in list.into_iter() {
             assert_eq!(x, 3);
         }
+    }
+
+    #[test]
+    fn iter() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&3));
+        assert_eq!(iter.next(), Some(&2));
+        assert_eq!(iter.next(), Some(&1));
+
+        assert_eq!(list.peek(), Some(&3));
+
+        let mut l_iter;
+        {
+            let mut l = List::new();
+            l.push(5);
+            l_iter = l.iter();
+        }
+        assert_eq!(l_iter.next(), Some(&5));
     }
 }

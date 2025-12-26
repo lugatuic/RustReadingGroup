@@ -1,3 +1,4 @@
 {
-  "preferred_line_length": 80
+  "preferred_line_length": 80,
+  "relative_line_numbers": "disabled"
 }
