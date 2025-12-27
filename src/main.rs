@@ -1,3 +1,4 @@
+mod brief_example_of_clone;
 pub mod first;
 mod lifetimes;
 pub mod second;
