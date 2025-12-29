@@ -1,7 +1,9 @@
 mod brief_example_of_clone;
 pub mod first;
 mod lifetimes;
+mod messing_with_enums;
 pub mod second;
+pub mod third;
 mod undefined_behavior;
 
 fn main() {
