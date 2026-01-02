@@ -23,4 +23,9 @@ impl<T> List<T> {
             })),
         }
     }
+    pub fn tail(&self) -> Self {
+        List {
+            head: self.head.as_ref().map(|n| n.next.clone()).flatten(),
+        }
+    }
 }
