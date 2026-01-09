@@ -1,4 +1,5 @@
 mod brief_example_of_clone;
+mod capturing_example;
 pub mod first;
 mod lifetimes;
 mod messing_with_enums;
