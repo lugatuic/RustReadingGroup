@@ -44,8 +44,19 @@ impl<T> Drop for List<T> {
         let mut cur_link = self.head.take();
         // We'll look at this error next time!
         while let Some(mut boxed_node) = cur_link {
+            // Runs the destructor for the old value of cur_link before replacing it but after taking its next.
             cur_link = boxed_node.next.take();
         }
+
+        // Node * cur_link = head;
+        // while (cur_link != null) {
+        //  Node * old_link = cur_link;
+        //  cur_link = cur_link->next;
+        //  cur_link->next = null;
+        //  Destroy(old_link); // free every pointer member of old_link
+        //  free(old_link);
+        // }
+    }
     }
 }
 
