@@ -16,6 +16,6 @@ mod test {
     #[test]
     fn test_foo() {
         foo(Box::new(5));
-        panic!("Always fails so we see output.");
+        // panic!("Always fails so we see output.");
     }
 }
