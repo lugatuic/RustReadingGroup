@@ -57,7 +57,6 @@ impl<T> Drop for List<T> {
         //  free(old_link);
         // }
     }
-    }
 }
 
 pub struct IntoIter<T>(List<T>);
